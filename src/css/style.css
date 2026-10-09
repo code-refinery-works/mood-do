@@ -1,0 +1,437 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fef3c7;
+      --card: #ffffff;
+      --card-text: #431407;
+      --accent: #f97316;
+      --accent2: #f59e0b;
+      --accent-text: #ffffff;
+      --input-bg: #fff7ed;
+      --input-text: #431407;
+      --input-placeholder: #fdba74;
+      --input-ring: #f97316;
+      --quote-bg: #fff7ed;
+      --quote-text: #9a3412;
+      --quote-border: #fed7aa;
+      --item-bg: rgba(0,0,0,0.05);
+      --item-hover: rgba(0,0,0,0.09);
+      --muted: rgba(0,0,0,0.4);
+      --shadow: rgba(251,146,60,0.25);
+      --progress-bg: rgba(0,0,0,0.08);
+      --progress-fill: #f97316;
+      --btn-selector-bg: rgba(0,0,0,0.07);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background-color: var(--bg);
+      transition: background-color 0.6s cubic-bezier(.4,0,.2,1);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS (紙吹雪) ── */
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--card);
+      color: var(--card-text);
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      z-index: 10000;
+      transition: transform 0.4s cubic-bezier(.34,1.56,.64,1), opacity 0.4s ease;
+      opacity: 0;
+      white-space: nowrap;
+      max-width: 90vw;
+      text-align: center;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* ── APP CONTAINER ── */
+    #app-container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card);
+      color: var(--card-text);
+      border-radius: 28px;
+      padding: 28px 24px;
+      box-shadow: 0 20px 60px var(--shadow);
+      transition: background 0.5s ease, color 0.5s ease, box-shadow 0.5s ease;
+      position: relative;
+    }
+
+    /* ── HEADER ── */
+    header { text-align: center; margin-bottom: 20px; }
+
+    #today-date {
+      font-size: 11px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      opacity: .65;
+      font-weight: 600;
+    }
+
+    #app-title {
+      font-size: 26px;
+      font-weight: 900;
+      margin: 4px 0 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      transition: all 0.5s ease;
+    }
+
+    /* ── MOOD SELECTOR ── */
+    .mood-selector {
+      display: flex;
+      gap: 6px;
+      background: var(--btn-selector-bg);
+      border-radius: 18px;
+      padding: 6px;
+    }
+
+    .mood-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      padding: 8px 4px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.25s ease;
+      opacity: 0.55;
+    }
+    .mood-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .mood-btn.active {
+      background: var(--card);
+      opacity: 1;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+    .mood-btn .mood-emoji { font-size: 20px; line-height: 1; }
+    .mood-btn .mood-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--card-text);
+    }
+    .mood-btn.active .mood-label { color: var(--accent); }
+
+    /* ── QUOTE ── */
+    #mood-quote {
+      background: var(--quote-bg);
+      color: var(--quote-text);
+      border: 1px solid var(--quote-border);
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      margin-top: 16px;
+      transition: all 0.5s ease;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── PROGRESS ── */
+    .progress-wrap {
+      margin-bottom: 16px;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      opacity: 0.6;
+    }
+    .progress-bar-bg {
+      height: 5px;
+      background: var(--progress-bg);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 99px;
+      transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── FORM ── */
+    #todo-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    #todo-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 14px;
+      background: var(--input-bg);
+      color: var(--input-text);
+      font-size: 14px;
+      font-weight: 500;
+      outline: none;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
+      transition: background 0.4s, color 0.4s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+    #todo-input::placeholder { color: var(--input-placeholder); }
+    #todo-input:focus { box-shadow: inset 0 2px 6px rgba(0,0,0,0.06), 0 0 0 2.5px var(--input-ring); }
+
+    #add-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: var(--accent-text);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 14px var(--shadow);
+      transition: all 0.25s ease;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    #add-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow); }
+    #add-btn:active { transform: scale(0.96); }
+
+    /* ── TODO LIST ── */
+    #todo-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 14px;
+      background: var(--item-bg);
+      border-radius: 14px;
+      transition: all 0.3s cubic-bezier(.4,0,.2,1);
+      animation: slideIn 0.3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .todo-item:hover { background: var(--item-hover); }
+    .todo-item.completed { opacity: 0.42; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; transform: scale(0.95); height: 0; padding: 0; margin: 0; }
+    }
+
+    /* Checkbox */
+    .todo-check {
+      width: 22px; height: 22px;
+      border-radius: 8px;
+      border: 2.5px solid var(--accent);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      background: transparent;
+    }
+    .todo-item.completed .todo-check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .todo-check svg { display: none; }
+    .todo-item.completed .todo-check svg { display: block; }
+
+    /* Text */
+    .todo-text {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .todo-item.completed .todo-text { text-decoration: line-through; }
+
+    /* Delete btn */
+    .todo-delete {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0.2;
+      transition: opacity 0.2s, transform 0.2s;
+      padding: 4px;
+      border-radius: 6px;
+      color: var(--card-text);
+      flex-shrink: 0;
+    }
+    .todo-item:hover .todo-delete { opacity: 0.6; }
+    .todo-delete:hover { opacity: 1 !important; transform: scale(1.2); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 32px 0;
+      opacity: 0.4;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.8;
+    }
+    .empty-state .empty-icon { font-size: 36px; margin-bottom: 8px; }
+
+    /* ── ALL DONE STATE ── */
+    #all-done {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      border-radius: 18px;
+      background: var(--quote-bg);
+      border: 1px solid var(--quote-border);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--quote-text);
+      line-height: 1.7;
+      animation: slideIn 0.4s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    /* ── MOOD-SPECIFIC OVERRIDES ── */
+
+    /* ENERGY */
+    body.mood-energy {
+      --bg: #fef3c7;
+      --card: #ffffff;
+      --card-text: #431407;
+      --accent: #f97316;
+      --accent2: #f59e0b;
+      --accent-text: #ffffff;
+      --input-bg: #fff7ed;
+      --input-text: #431407;
+      --input-placeholder: #fdba74;
+      --input-ring: #f97316;
+      --quote-bg: #fff7ed;
+      --quote-text: #9a3412;
+      --quote-border: #fed7aa;
+      --item-bg: rgba(249,115,22,0.07);
+      --item-hover: rgba(249,115,22,0.13);
+      --shadow: rgba(249,115,22,0.22);
+      --progress-fill-from: #f97316;
+      --progress-fill-to: #f59e0b;
+      --btn-selector-bg: rgba(0,0,0,0.06);
+    }
+
+    /* CHILL */
+    body.mood-chill {
+      --bg: #ecfdf5;
+      --card: #ffffff;
+      --card-text: #064e3b;
+      --accent: #10b981;
+      --accent2: #34d399;
+      --accent-text: #ffffff;
+      --input-bg: #f0fdf4;
+      --input-text: #064e3b;
+      --input-placeholder: #6ee7b7;
+      --input-ring: #10b981;
+      --quote-bg: #f0fdf4;
+      --quote-text: #065f46;
+      --quote-border: #a7f3d0;
+      --item-bg: rgba(16,185,129,0.07);
+      --item-hover: rgba(16,185,129,0.13);
+      --shadow: rgba(16,185,129,0.2);
+      --btn-selector-bg: rgba(0,0,0,0.05);
+    }
+
+    /* LOW */
+    body.mood-low {
+      --bg: #1e1b4b;
+      --card: #1e1b4b;
+      --card-text: #e0e7ff;
+      --accent: #818cf8;
+      --accent2: #a78bfa;
+      --accent-text: #1e1b4b;
+      --input-bg: #312e81;
+      --input-text: #e0e7ff;
+      --input-placeholder: #6366f1;
+      --input-ring: #818cf8;
+      --quote-bg: rgba(129,140,248,0.1);
+      --quote-text: #c7d2fe;
+      --quote-border: rgba(129,140,248,0.25);
+      --item-bg: rgba(255,255,255,0.05);
+      --item-hover: rgba(255,255,255,0.09);
+      --muted: rgba(255,255,255,0.35);
+      --shadow: rgba(0,0,0,0.5);
+      --progress-bg: rgba(255,255,255,0.08);
+      --btn-selector-bg: rgba(255,255,255,0.07);
+    }
+    body.mood-low #app-container {
+      border: 1px solid rgba(129,140,248,0.2);
+    }
+
+    /* FOCUS */
+    body.mood-focus {
+      --bg: #e4e4e7;
+      --card: #18181b;
+      --card-text: #f4f4f5;
+      --accent: #3b82f6;
+      --accent2: #60a5fa;
+      --accent-text: #ffffff;
+      --input-bg: #27272a;
+      --input-text: #f4f4f5;
+      --input-placeholder: #52525b;
+      --input-ring: #3b82f6;
+      --quote-bg: #27272a;
+      --quote-text: #93c5fd;
+      --quote-border: rgba(59,130,246,0.4);
+      --item-bg: rgba(255,255,255,0.05);
+      --item-hover: rgba(255,255,255,0.09);
+      --muted: rgba(255,255,255,0.35);
+      --shadow: rgba(0,0,0,0.4);
+      --progress-bg: rgba(255,255,255,0.08);
+      --btn-selector-bg: rgba(255,255,255,0.07);
+    }
+    body.mood-focus #app-container {
+      border: 1px solid rgba(59,130,246,0.2);
+    }
+    body.mood-focus #mood-quote {
+      border-left: 4px solid var(--accent);
+      border-radius: 0 12px 12px 0;
+      text-align: left;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      #app-container { padding: 22px 16px; border-radius: 22px; }
+      .mood-btn .mood-label { font-size: 9px; }
+    }
