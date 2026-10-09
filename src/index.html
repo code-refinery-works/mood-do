@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoodDo - 気分で変わるTodoアプリ</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="mood-energy">
+
+  <canvas id="confetti-canvas"></canvas>
+  <div id="toast"></div>
+
+  <div id="app-container">
+    <!-- HEADER -->
+    <header>
+      <p id="today-date"></p>
+      <h1 id="app-title">MoodDo ✦</h1>
+
+      <!-- 気分セレクター -->
+      <div class="mood-selector">
+        <button class="mood-btn" data-mood="energy" onclick="setMood('energy')">
+          <span class="mood-emoji">🔥</span>
+          <span class="mood-label">やる気</span>
+        </button>
+        <button class="mood-btn" data-mood="chill" onclick="setMood('chill')">
+          <span class="mood-emoji">🌿</span>
+          <span class="mood-label">まったり</span>
+        </button>
+        <button class="mood-btn" data-mood="low" onclick="setMood('low')">
+          <span class="mood-emoji">🌙</span>
+          <span class="mood-label">省エネ</span>
+        </button>
+        <button class="mood-btn" data-mood="focus" onclick="setMood('focus')">
+          <span class="mood-emoji">🎯</span>
+          <span class="mood-label">集中</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ひとこと -->
+    <div id="mood-quote"></div>
+
+    <!-- プログレス -->
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="progress-meta">
+        <span id="progress-label">0 / 0 完了</span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- 入力フォーム -->
+    <form id="todo-form">
+      <input type="text" id="todo-input" placeholder="タスクを追加..." autocomplete="off" required>
+      <button type="submit" id="add-btn">追加</button>
+    </form>
+
+    <!-- 全完了メッセージ -->
+    <div id="all-done"></div>
+
+    <!-- Todoリスト -->
+    <ul id="todo-list"></ul>
+  </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
